@@ -14,18 +14,27 @@ class App < Sinatra::Application
 
   get "/" do
     messages = @database_connection.sql("SELECT * FROM messages")
-
     erb :home, locals: {messages: messages}
   end
 
-  post "/messages" do
+  post "/" do
     message = params[:message]
     if message.length <= 140
       @database_connection.sql("INSERT INTO messages (message) VALUES ('#{message}')")
+      redirect '/'
     else
       flash[:error] = "Message must be less than 140 characters."
+      redirect '/'
     end
-    redirect "/"
   end
 
-end
+  get "/:id/edit" do
+    message = @database_connection.sql("SELECT * from messages where id = #{params[:id]}").first
+    erb :edit, :locals => {:message => message}
+  end
+
+  patch "/:id/edit" do
+    @database_connection.sql("UPDATE messages set message = '#{params[:message]}' where id = '#{params[:id]}'")
+    redirect '/'
+  end
+  end
