@@ -28,13 +28,25 @@ class App < Sinatra::Application
     end
   end
 
+  delete "/:id" do
+    id = params[:id]
+    @database_connection.sql("delete from messages where message= '#{id}'")
+    redirect '/'
+    end
+
   get "/:id/edit" do
-    message = @database_connection.sql("SELECT * from messages where id = #{params[:id]}").first
+    message = @database_connection.sql("SELECT * from messages where id = '#{params[:id]}'")
     erb :edit, :locals => {:message => message}
   end
 
   patch "/:id/edit" do
+    message = params[:message]
+    if message.length >= 140
+      flash[:error] = "Message must be less than 140 characters."
+      redirect "/#{params[:id]}/edit"
+    else
     @database_connection.sql("UPDATE messages set message = '#{params[:message]}' where id = '#{params[:id]}'")
     redirect '/'
+  end
   end
   end
