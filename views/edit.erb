@@ -1,9 +1,0 @@
-<h3>Edit Message</h3>
-
-<% message.each do |message| %>
-<form method="post" action="/<%= message["id"] %>/edit">
-  <input type="hidden" name="_method" value="patch">
-  <input type="text" name="message" value="<%= message["message"] %>">
-  <button type="submit">Submit</button>
-</form>
-<%end%>
